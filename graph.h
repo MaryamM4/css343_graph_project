@@ -10,8 +10,21 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+struct Vertex {
+  Vertex(string val) : data(val), visited(false) {}
+
+  // EX:  A-[3]->B  & A-[8]->C :
+  //      data  = "A"
+  //      edges = [{B*, 3}, {C*, 8}]
+  string data;
+  vector<pair<Vertex *, int>> edges;
+
+  bool visited; // Whether vertex has been visited.
+};
 
 class Graph {
 public:
@@ -38,6 +51,17 @@ public:
 
   // @return true if vertex is in the graph
   bool contains(const string &label) const;
+
+  // @returns end iterator if not found (vertices[src]->edges.end())
+  vector<std::pair<Vertex *, int>>::iterator
+  getPair(const std::string &src, const std::string &edgeVal);
+
+  // @reutrn true if the pair is a valid pair.
+  bool isEdge(vector<std::pair<Vertex *, int>>::iterator pair);
+
+  // @returns cost to direct edge.
+  //           -1 if edge is not directly pointed at by src.
+  int costToEdge(const string &src, const string edge);
 
   // @return total number of vertices
   int verticesSize() const;
@@ -68,7 +92,8 @@ public:
   // each line represents an edge in the form of "string string int"
   // vertex labels cannot contain spaces
   // @return true if file successfully read
-  bool readFile(const string &filename);
+  // Input should end with ".txt"
+  bool buildFromFile(const string &filename);
 
   // depth-first traversal starting from given startLabel
   void dfs(const string &startLabel, void visit(const string &label));
@@ -100,6 +125,13 @@ public:
   int mstKruskal(const string &startLabel,
                  void visit(const string &from, const string &to,
                             int weight)) const;
+
+  // Prints values in 'verticies' map, and vertex's 'edges' vector.
+  void printVertexEdges();
+
+private:
+  // "vertex" -> [{"adjVertex1*, costTo1"}, ...]
+  map<std::string, Vertex *> vertices;
 };
 
 #endif // GRAPH_H
