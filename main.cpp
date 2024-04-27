@@ -7,18 +7,28 @@
 
 using namespace std;
 
-void testFileBuild() {
+void testFileBuild(const string &filename) {
   Graph gA;
-  gA.buildFromFile("graph1.txt");
+  gA.buildFromFile(filename);
   cout << endl;
   gA.printVertexEdges();
+}
+
+void testDij(const string &filename) {
+  Graph gA;
+  gA.buildFromFile(filename);
+  cout << endl;
+  gA.printDijkstra("A");
 }
 
 // forward declaration, implementation in xxxtest.cpp
 void testAll();
 
 int main() {
-  testFileBuild();
+  string filename = "graph1.txt";
+
+  // testFileBuild(filename);
+  testDij(filename);
 
   // testAll();
 
