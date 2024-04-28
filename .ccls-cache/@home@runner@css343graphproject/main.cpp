@@ -7,28 +7,44 @@
 
 using namespace std;
 
-void testFileBuild(const string &filename) {
+string startLabel = "A";
+
+void visit(const string &vertexLabel) {
+  cout << "Visited vertex: " << vertexLabel << endl;
+}
+
+void fileBuild(Graph &graph, string filename) {
   Graph gA;
-  gA.buildFromFile(filename);
+  graph.buildFromFile(filename);
   cout << endl;
   gA.printVertexEdges();
 }
 
-void testDij(const string &filename) {
-  Graph gA;
-  gA.buildFromFile(filename);
+void testDij(Graph &graph) {
   cout << endl;
-  gA.printDijkstra("A");
+  graph.printDijkstra(startLabel);
+}
+
+void testBFS(Graph &graph) {
+  cout << "\nbfs(" << startLabel << ")\n";
+  graph.bfs(startLabel, visit);
+}
+
+void testDFS(Graph &graph) {
+  // cout << "\ndfs(" << startLabel << ")\n";
+  graph.dfs(startLabel, visit);
 }
 
 // forward declaration, implementation in xxxtest.cpp
 void testAll();
 
 int main() {
-  string filename = "graph1.txt";
+  Graph gOne;
+  fileBuild(gOne, "graph1.txt");
 
-  // testFileBuild(filename);
-  testDij(filename);
+  // testDij(gOne);
+  // testBFS(gOne);
+  testDFS(gOne);
 
   // testAll();
 

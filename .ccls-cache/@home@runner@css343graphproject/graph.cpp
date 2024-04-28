@@ -13,18 +13,33 @@
 
 using namespace std;
 
-// constructor, empty graph
-// directionalEdges defaults to true
+/**
+ * Constructor, empty graph.
+ * directionalEdges defaults to true.
+ */
 Graph::Graph(bool directionalEdges) {
-  // Dummy used for "invalid" values.
-  vertices[""] = new Vertex("");
+  vertices[""] = new Vertex(""); // Dummy used for "invalid" values.
 }
 
-// destructor
-Graph::~Graph() {}
+// Destructor.
+Graph::~Graph() {
+  for (const auto &vertex : vertices) {
+    // Clear the vertex's 'edges'.
+    for (std::pair<Vertex *, int> &edgePair : (vertex.second)->edges) {
+      edgePair.first = nullptr;
+    }
+    (vertex.second)->edges.clear();
+
+    // Deallocate the vertex pointers.
+    vertices[vertex.first] = nullptr;
+  }
+
+  // Empty the 'vertices' map.
+  vertices.clear();
+}
 
 // @return total number of vertices
-int Graph::verticesSize() const { return 0; }
+int Graph::verticesSize() const { return vertices.size(); }
 
 // @return total number of edges
 int Graph::edgesSize() const { return 0; }
@@ -33,6 +48,7 @@ int Graph::edgesSize() const { return 0; }
 int Graph::vertexDegree(const string &label) const { return -1; }
 
 /**
+ * Adds vertex to graph, without connecting to any edges.
  * @return true if vertex added, false if it already is in the graph.
  */
 bool Graph::add(const string &label) {
@@ -65,7 +81,7 @@ bool Graph::contains(const string &label) const {
  * Invalid case 1: 'src' or 'to' don't already exist in 'vertices' map.
  * Invalid case 2: 'to' is not an edge of 'src'.
  *
- * @note   To check if output is valid, use the isEdge(pair) function.
+ * @note   To check if output is "valid", use the isEdge(pair) function.
  */
 vector<std::pair<Vertex *, int>>::iterator
 Graph::getPair(const std::string &src, const std::string &edgeVal) {
@@ -83,8 +99,9 @@ Graph::getPair(const std::string &src, const std::string &edgeVal) {
 }
 
 /**
- * @note   Assumes the pair is an output of the getPair(src, edge) function.
- * @return true if pair is valid.
+ * @note   Assumes the pair is an output
+ *         of the getPair(src, edge) function.
+ * @return true if pair is not equal to the dummy vertex ("is valid").
  */
 bool Graph::isEdge(vector<std::pair<Vertex *, int>>::iterator pair) {
   return (pair != vertices[""]->edges.end());
@@ -154,11 +171,75 @@ bool Graph::disconnect(const string &src, const string &to) {
   return false;
 }
 
-// depth-first traversal starting from given startLabel
-void Graph::dfs(const string &startLabel, void visit(const string &label)) {}
+/**
+ * Prints the Depth-first traversal starting from startLabel.
+ */
+void Graph::dfs(const string &startLabel,
+                void visit(const string &startLabel)) {
 
-// breadth-first traversal starting from startLabel
-void Graph::bfs(const string &startLabel, void visit(const string &label)) {}
+  std::cout << "dfs(" << startLabel << ")\n";
+  recDfs(startLabel, visit);
+  resetVisits();
+}
+
+/**
+ * Recusrive helper for displaying the DFS.
+ *
+ * Reference:
+ * https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
+ */
+void Graph::recDfs(const string &startLabel,
+                   void visit(const string &startLabel)) {
+
+  vertices[startLabel]->visited = true;
+  visit(startLabel);
+
+  for (std::pair<Vertex *, int> edgePair : (vertices[startLabel]->edges)) {
+    if (!(edgePair.first->visited)) {
+      recDfs(edgePair.first->data, visit);
+    }
+  }
+}
+
+/**
+ * Prints the Breadth-first traversal starting from startLabel.
+ *
+ * Reference:
+ * https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/#
+ */
+void Graph::bfs(const string &startLabel,
+                void visit(const string &startLabel)) {
+
+  if (!contains(startLabel)) {
+    return;
+  }
+
+  queue<string> dataQ;
+
+  vertices[startLabel]->visited = true;
+  visit(startLabel);
+  dataQ.push(startLabel);
+
+  while (!dataQ.empty()) {
+    string currVertexData = dataQ.front();
+    dataQ.pop();
+
+    vertices[currVertexData]->visited = false; // Reset
+
+    for (std::pair<Vertex *, int> edgePair :
+         (vertices[currVertexData]->edges)) {
+
+      if (!(edgePair.first)->visited) {
+        edgePair.first->visited = true;
+        visit(edgePair.first->data);
+        dataQ.push((edgePair.first)->data);
+      }
+    }
+  }
+
+  std::cout << std::endl;
+  resetVisits();
+}
 
 // store the weights in a map
 // store the previous label in a map
@@ -240,20 +321,53 @@ Graph::dijkstra(const string &srcLabel) const {
     }
   }
 
+  resetVisits();
   return make_pair(weights, previous);
 }
 
-// minimum spanning tree using Prim's algorithm
+/**
+ * Minimum spanning tree using Prim's algorithm.
+ *
+ * @note ONLY works for NONDIRECTED graphs, and
+ *       ASSUMES the edge [P->Q] has the same weight as [Q->P].
+ *
+ * @return length of the minimum spanning tree,
+ *          or -1 if start vertex DNE.
+ */
 int Graph::mstPrim(const string &startLabel,
                    void visit(const string &from, const string &to,
                               int weight)) const {
+
+  if (!contains(startLabel)) {
+    return -1;
+  }
+
+  // TODO
+
+  resetVisits();
   return -1;
 }
 
-// minimum spanning tree using Prim's algorithm
+/**
+ * Minimum spanning tree using Kruskal's algorithm.
+ *
+ * @note ONLY works for NONDIRECTED graphs, and
+ *       ASSUMES the edge [P->Q] has the same weight as [Q->P].
+ *
+ * @return length of the minimum spanning tree,
+ *          or -1 if start vertex DNE.
+ */
 int Graph::mstKruskal(const string &startLabel,
                       void visit(const string &from, const string &to,
                                  int weight)) const {
+
+  if (!contains(startLabel)) {
+    return -1;
+  }
+
+  // TODO
+
+  resetVisits();
   return -1;
 }
 
@@ -333,4 +447,27 @@ void Graph::printDijkstra(const string &startLabel) {
   }
 
   std::cout << std::endl;
+}
+
+/**
+ * Visit helper function for traversal methods.
+ */
+void Graph::visit(const string &label) {
+  if (contains(label)) {
+    vertices[label]->visited = true;
+    // std::cout << "Visited vertex '" << label << "'.\n";
+
+  } else {
+    std::cout << "Cannot visit non-existent vertex '" << label << "'.\n";
+  }
+}
+
+/**
+ * Resets all vertices' "visit" bool to false.
+ */
+void Graph::resetVisits() const {
+  for (const auto &entry : vertices) {
+    (entry.second)->visited = false;
+  }
+  std::cout << "\nAll vertices 'visit' status reset to false.\n\n";
 }

@@ -100,6 +100,7 @@ public:
 
   // depth-first traversal starting from given startLabel
   void dfs(const string &startLabel, void visit(const string &label));
+  void recDfs(const string &startLabel, void visit(const string &label));
 
   // breadth-first traversal starting from startLabel
   // call the function visit on each vertex label */
@@ -129,6 +130,8 @@ public:
                  void visit(const string &from, const string &to,
                             int weight)) const;
 
+  void visit(const string &label);
+
   // ====================================
   // ============== PRINTS ==============
 
@@ -141,6 +144,7 @@ public:
 private:
   // "vertex" -> [{"adjVertex1*, costTo1"}, ...]
   map<std::string, Vertex *> vertices;
+  void resetVisits() const;
 };
 
 #endif // GRAPH_H
