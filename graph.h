@@ -9,11 +9,13 @@
 #define GRAPH_H
 
 #include <map>
+#include <queue>
 #include <string>
 #include <vector>
 
 using namespace std;
 
+// Graph node.
 struct Vertex {
   Vertex(string val) : data(val), visited(false) {}
 
@@ -23,7 +25,46 @@ struct Vertex {
   string data;
   vector<pair<Vertex *, int>> edges;
 
-  bool visited; // Whether vertex has been visited.
+  mutable bool visited; // Whether vertex has been visited.
+};
+
+// Union for Krustal's algorithm. Adjusted from:
+// https://www.geeksforgeeks.org/kruskals-minimum-spanning-tree-algorithm-greedy-algo-2/
+class DisjointSet {
+public:
+  DisjointSet() {}
+
+  void makeSet(Vertex *vertex) {
+    parent[vertex] = vertex;
+    rank[vertex] = 0;
+  }
+
+  Vertex *findSet(Vertex *vertex) {
+    if (vertex != parent[vertex]) {
+      parent[vertex] = findSet(parent[vertex]);
+    }
+    return parent[vertex];
+  }
+
+  void unionSets(Vertex *x, Vertex *y) {
+    Vertex *rootX = findSet(x);
+    Vertex *rootY = findSet(y);
+
+    if (rank[rootX] < rank[rootY]) {
+      parent[rootX] = rootY;
+
+    } else if (rank[rootX] > rank[rootY]) {
+      parent[rootY] = rootX;
+
+    } else {
+      parent[rootY] = rootX;
+      rank[rootX]++;
+    }
+  }
+
+private:
+  map<Vertex *, Vertex *> parent;
+  map<Vertex *, int> rank;
 };
 
 class Graph {
@@ -131,6 +172,20 @@ public:
                             int weight)) const;
 
   void visit(const string &label);
+
+  // IF start and edge are direct neighbors, return cost between.
+  int costToEdge(const string &startLabel, const string &edgeLabel);
+
+  std::pair<Vertex *, int> closestUnvisitedEdge(const string &startLabel) const;
+
+  int minKey(int vSize, int key[], bool mst[]);
+
+  bool ascendingEdgeSort(const std::pair<Vertex *, int> &leftEdge,
+                         const std::pair<Vertex *, int> &rightEdge);
+
+  // priority_queue<pair<int, pair<Vertex *, Vertex *>>> getSortedEdges();
+
+  multimap<int, pair<Vertex *, Vertex *>> getSortedEdges() const;
 
   // ====================================
   // ============== PRINTS ==============
