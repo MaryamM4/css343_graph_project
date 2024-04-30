@@ -8,10 +8,26 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <iostream>
 #include <map>
+#include <queue>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+// Graph node.
+struct Vertex {
+  Vertex(string val) : data(val), visited(false) {}
+
+  // EX:  A-[3]->B  & A-[8]->C :
+  //      data  = "A"
+  //      edges = [{B*, 3}, {C*, 8}]
+  string data;
+  vector<pair<Vertex *, int>> edges;
+
+  mutable bool visited; // Whether vertex has been visited.
+};
 
 class Graph {
 public:
@@ -38,6 +54,17 @@ public:
 
   // @return true if vertex is in the graph
   bool contains(const string &label) const;
+
+  // @returns end iterator if not found (vertices[src]->edges.end())
+  vector<std::pair<Vertex *, int>>::iterator
+  getPair(const std::string &src, const std::string &edgeVal);
+
+  // @reutrn true if the pair is a valid pair.
+  bool isEdge(vector<std::pair<Vertex *, int>>::iterator pair);
+
+  // @returns cost to direct edge.
+  //           -1 if edge is not directly pointed at by src.
+  int costToEdge(const string &src, const string edge);
 
   // @return total number of vertices
   int verticesSize() const;
@@ -68,10 +95,15 @@ public:
   // each line represents an edge in the form of "string string int"
   // vertex labels cannot contain spaces
   // @return true if file successfully read
-  bool readFile(const string &filename);
+  // Input should end with ".txt"
+  bool buildFromFile(const string &filename);
+
+  // Sole purpose of this function is to adhere to grader's tests.
+  bool readFile(const string &filename) { return buildFromFile(filename); }
 
   // depth-first traversal starting from given startLabel
   void dfs(const string &startLabel, void visit(const string &label));
+  void recDfs(const string &startLabel, void visit(const string &label));
 
   // breadth-first traversal starting from startLabel
   // call the function visit on each vertex label */
@@ -85,21 +117,44 @@ public:
   pair<map<string, int>, map<string, string>>
   dijkstra(const string &startLabel) const;
 
-  // minimum spanning tree using Prim's algorithm
-  // ONLY works for NONDIRECTED graphs
-  // ASSUMES the edge [P->Q] has the same weight as [Q->P]
-  // @return length of the minimum spanning tree or -1 if start vertex not
+  void visit(const string &label);
+
+  // OPTIONAL, NOT DONE.
   int mstPrim(const string &startLabel,
               void visit(const string &from, const string &to,
-                         int weight)) const;
+                         int weight)) const {
+    std::cout << "\nKrustal's algorithm was optional, and "
+                 "not implemented.\n"
+              << std::endl;
 
-  // minimum spanning tree using Kruskal's algorithm
-  // ONLY works for NONDIRECTED graphs
-  // ASSUMES the edge [P->Q] has the same weight as [Q->P]
-  // @return length of the minimum spanning tree or -1 if start vertex not
+    return -1;
+  }
+
+  // NOT PART OF RUBRIC. NOT DONE.
   int mstKruskal(const string &startLabel,
                  void visit(const string &from, const string &to,
-                            int weight)) const;
+                            int weight)) const {
+
+    std::cout << "\nKrustal's algorithm was not required by the rubric, and "
+                 "not implemented.\n"
+              << std::endl;
+
+    return -1;
+  }
+
+  // ====================================
+  // ============== PRINTS ==============
+
+  // Prints values in 'verticies' map, and vertex's 'edges' vector.
+  void printVertexEdges();
+
+  // Calls dijkstra function and prints outcome.
+  void printDijkstra(const string &startLabel);
+
+private:
+  // "vertex" -> [{"adjVertex1*, costTo1"}, ...]
+  map<std::string, Vertex *> vertices;
+  void resetVisits() const;
 };
 
 #endif // GRAPH_H
