@@ -47,12 +47,6 @@ void testDFS(Graph &graph) {
   graph.dfs(startLabel, visit);
 }
 
-void testKrustals(Graph &graph) {
-  cout << "\nmstKrustal(" << startLabel << ")\n";
-  int cost = graph.mstKruskal(startLabel, visit);
-  cout << "\nCost = " << cost << ".\n\n";
-}
-
 // forward declaration, implementation in xxxtest.cpp
 void testAll();
 
@@ -63,13 +57,12 @@ int main() {
   Graph gOne;
   fileBuild(gOne, "graph1.txt");
 
-  // testDij(gOne);
-  // testBFS(gOne);
-  // testDFS(gOne);
-  // testKrustals(gOne);
+  testDij(gOne);
+  testBFS(gOne);
+  testDFS(gOne);
 
   // testAll();
 
-  cout << "Done!" << endl;
+  cout << "\nDone!" << endl;
   return 0;
 }

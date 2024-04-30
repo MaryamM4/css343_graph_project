@@ -4,7 +4,6 @@
 #include <cmath>
 #include <fstream>
 #include <functional>
-#include <iostream>
 #include <map>
 #include <queue>
 #include <set>
@@ -338,165 +337,6 @@ Graph::dijkstra(const string &srcLabel) const {
 }
 
 /**
- * @note   Cost between nodes should never be < 0, nor == +/- INT_MAX.
- * @return cost between src and edge.
- *         If the direction is from edge to label, returns negative.
- *         If start == edge, returns 0.
- *         If invalid input/nodes are not direct neighbors, return INT_MAX.
- */
-int Graph::costToEdge(const string &startLabel, const string &edgeLabel) {
-  // Invalid input.
-  if (!contains(startLabel) || !contains(edgeLabel)) {
-    return INT_MAX;
-  }
-
-  // Cost to self is always 0.
-  if (startLabel == edgeLabel) {
-    return 0;
-  }
-
-  // Cost from start->edge.
-  for (auto &edge : vertices.at(startLabel)->edges) {
-    if (edge.first->data == edgeLabel) {
-      return edge.second;
-    }
-  }
-
-  // If start doesn't point to edge, return
-  // - (cost from edge->start).
-  for (auto &edge : vertices.at(edgeLabel)->edges) {
-    if (edge.first->data == startLabel) {
-      return (0 - edge.second);
-    }
-  }
-
-  // Start and edge are not neighbors.
-  return INT_MAX;
-}
-
-/**
- * @note    Treats graph as directed.
- * @returns <Vector *edge, int cost> of edge with min cost to parent.
- *          Returns INT_MAX if start is invalid or has no edges.
- */
-std::pair<Vertex *, int>
-Graph::closestUnvisitedEdge(const string &startLabel) const {
-  std::pair<Vertex *, int> minEdge = std::make_pair(nullptr, INT_MAX);
-
-  if (contains(startLabel) && !(vertices.at(startLabel)->edges.empty())) {
-    for (auto &currEdge : vertices.at(startLabel)->edges) {
-      if (!(currEdge.first->visited) && currEdge.second < minEdge.second) {
-        minEdge.first = currEdge.first;
-        minEdge.second = currEdge.second;
-      }
-    }
-  }
-
-  return minEdge;
-}
-
-/**
- * Minimum spanning tree using Prim's algorithm.
- *
- * @note ONLY works for NONDIRECTED graphs, and
- *       ASSUMES the edge [P->Q] has the same weight as [Q->P].
- *
- * Reference:
- * https://www.geeksforgeeks.org/graph-and-its-representations/
- *
- * @return length of the minimum spanning tree,
- *          or -1 if start vertex DNE.
- */
-int Graph::mstPrim(const string &startLabel,
-                   void visit(const string &from, const string &to,
-                              int weight)) const {
-
-  if (!contains(startLabel)) {
-    std::cout << "Cannot preform Prim's MST on non-existent vertex '"
-              << startLabel << "'.\n";
-    return -1;
-  }
-
-  resetVisits();
-  int vSize = verticesSize();
-
-  return vSize;
-}
-
-/**
- * Minimum spanning tree using Kruskal's algorithm.
- *
- * References:
- * (1) https://www.youtube.com/watch?v=JZBQLXgSGfs
- * (2) https://www.geeksforgeeks.org/kruskals-minimum
- *      -spanning-tree-algorithm-greedy-algo-2/
- *
- * @note ONLY works for UNDIRECTED graphs, and
- *       ASSUMES the edge [P->Q] has the same weight as [Q->P].
- *
- * @return length of the minimum spanning tree,
- *          or -1 if start vertex DNE.
- */
-int Graph::mstKruskal(const string &startLabel,
-                      void visit(const string &from, const string &to,
-                                 int weight)) const {
-
-  if (!contains(startLabel)) {
-    std::cout << "Cannot preform Kruskal's MST on non-existent vertex '"
-              << startLabel << "'.\n";
-    return -1;
-  }
-
-  int mstCost = 0;
-
-  // Sort edges by ascending edge weight:
-  multimap<int, pair<Vertex *, Vertex *>> sortedEdges = getSortedEdges();
-
-  DisjointSet ds;
-  for (const auto &vertexPair : vertices) {
-    ds.makeSet(vertexPair.second);
-  }
-
-  // Walk through sorted edges & looks at the 2 nodes the edge belongs to.
-  for (const auto &edgePair : sortedEdges) {
-    Vertex *from = edgePair.second.first;
-    Vertex *to = edgePair.second.second;
-    int weight = edgePair.first;
-
-    // If they're alrdy unified, don't include this edge,
-    // otherwise, include it and unify the nodes.
-    if (ds.findSet(from) != ds.findSet(to)) {
-      ds.unionSets(from, to);
-      mstCost += weight;
-      visit(from->data, to->data, weight);
-    }
-  }
-
-  return mstCost;
-}
-
-/**
- * @return Edges sorted in ascending order,
- *         where each pair contains the following:
- *         <int cost, <Vertex *from, Vertex *to>>
- */
-multimap<int, pair<Vertex *, Vertex *>> Graph::getSortedEdges() const {
-
-  multimap<int, pair<Vertex *, Vertex *>> sortedEdges;
-
-  for (const auto &vertexPair : vertices) {
-    const Vertex *from = vertexPair.second;
-
-    for (const auto &edgePair : from->edges) {
-      sortedEdges.emplace(edgePair.second,
-                          std::make_pair(from, edgePair.first));
-    }
-  }
-
-  return sortedEdges;
-}
-
-/**
  * Read edges from a text file and creates the graph.
  *
  * First line of file is an integer, indicating number of edges.
@@ -594,5 +434,6 @@ void Graph::resetVisits() const {
   for (const auto &entry : vertices) {
     (entry.second)->visited = false;
   }
-  std::cout << "\nAll vertices 'visit' status reset to false.\n\n";
+
+  // std::cout << "\nAll vertices 'visit' status reset to false.\n\n";
 }

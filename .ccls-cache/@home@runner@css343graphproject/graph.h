@@ -8,6 +8,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <iostream>
 #include <map>
 #include <queue>
 #include <string>
@@ -26,45 +27,6 @@ struct Vertex {
   vector<pair<Vertex *, int>> edges;
 
   mutable bool visited; // Whether vertex has been visited.
-};
-
-// Union for Krustal's algorithm. Adjusted from:
-// https://www.geeksforgeeks.org/kruskals-minimum-spanning-tree-algorithm-greedy-algo-2/
-class DisjointSet {
-public:
-  DisjointSet() {}
-
-  void makeSet(Vertex *vertex) {
-    parent[vertex] = vertex;
-    rank[vertex] = 0;
-  }
-
-  Vertex *findSet(Vertex *vertex) {
-    if (vertex != parent[vertex]) {
-      parent[vertex] = findSet(parent[vertex]);
-    }
-    return parent[vertex];
-  }
-
-  void unionSets(Vertex *x, Vertex *y) {
-    Vertex *rootX = findSet(x);
-    Vertex *rootY = findSet(y);
-
-    if (rank[rootX] < rank[rootY]) {
-      parent[rootX] = rootY;
-
-    } else if (rank[rootX] > rank[rootY]) {
-      parent[rootY] = rootX;
-
-    } else {
-      parent[rootY] = rootX;
-      rank[rootX]++;
-    }
-  }
-
-private:
-  map<Vertex *, Vertex *> parent;
-  map<Vertex *, int> rank;
 };
 
 class Graph {
@@ -155,37 +117,30 @@ public:
   pair<map<string, int>, map<string, string>>
   dijkstra(const string &startLabel) const;
 
-  // minimum spanning tree using Prim's algorithm
-  // ONLY works for NONDIRECTED graphs
-  // ASSUMES the edge [P->Q] has the same weight as [Q->P]
-  // @return length of the minimum spanning tree or -1 if start vertex not
-  int mstPrim(const string &startLabel,
-              void visit(const string &from, const string &to,
-                         int weight)) const;
-
-  // minimum spanning tree using Kruskal's algorithm
-  // ONLY works for NONDIRECTED graphs
-  // ASSUMES the edge [P->Q] has the same weight as [Q->P]
-  // @return length of the minimum spanning tree or -1 if start vertex not
-  int mstKruskal(const string &startLabel,
-                 void visit(const string &from, const string &to,
-                            int weight)) const;
-
   void visit(const string &label);
 
-  // IF start and edge are direct neighbors, return cost between.
-  int costToEdge(const string &startLabel, const string &edgeLabel);
+  // OPTIONAL, NOT DONE.
+  int mstPrim(const string &startLabel,
+              void visit(const string &from, const string &to,
+                         int weight)) const {
+    std::cout << "\nKrustal's algorithm was optional, and "
+                 "not implemented.\n"
+              << std::endl;
 
-  std::pair<Vertex *, int> closestUnvisitedEdge(const string &startLabel) const;
+    return -1;
+  }
 
-  int minKey(int vSize, int key[], bool mst[]);
+  // NOT PART OF RUBRIC. NOT DONE.
+  int mstKruskal(const string &startLabel,
+                 void visit(const string &from, const string &to,
+                            int weight)) const {
 
-  bool ascendingEdgeSort(const std::pair<Vertex *, int> &leftEdge,
-                         const std::pair<Vertex *, int> &rightEdge);
+    std::cout << "\nKrustal's algorithm was not required by the rubric, and "
+                 "not implemented.\n"
+              << std::endl;
 
-  // priority_queue<pair<int, pair<Vertex *, Vertex *>>> getSortedEdges();
-
-  multimap<int, pair<Vertex *, Vertex *>> getSortedEdges() const;
+    return -1;
+  }
 
   // ====================================
   // ============== PRINTS ==============
