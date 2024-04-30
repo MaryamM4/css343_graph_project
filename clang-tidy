@@ -1,0 +1,78 @@
+# Configuration options for clang-tidy
+# CSS Linux machines, Sep 2019: LLVM version 3.8.1
+#
+# usage: clang-tidy *.cpp -- -std=c++14
+#
+#   -llvmlibc-callee-namespace',
+#   -llvmlibc-restrict-system-libc-headers,
+#  -llvmlibc-implementation-in-namespace,
+---
+# See https://clang.llvm.org/extra/clang-tidy/#using-clang-tidy for all possible checks
+
+Checks: >-
+  *,
+  -modernize-use-auto,
+  -hicpp-member-init,
+  -clang-analyzer-core.NullDereference,
+  -hicpp-member-init,
+  -clang-analyzer-core.NullDereference,
+  -clang-analyzer-core.NullDereference,
+  -readability-convert-member-functions-to-static,
+  -cppcoreguidelines-pro-type-member-init,hicpp-member-init,
+  -readability-magic-numbers,
+  -readability-inconsistent-declaration-parameter-name,
+  -clang-analyzer-core.NullDereference,
+  -performance-unnecessary-value-param,
+  -performance-unnecessary-value-param,
+  -readability-isolate-declaration,
+  -readability-identifier-length,
+  -misc-unused-parameters,
+  -llvm-else-after-return,
+  -readability-else-after-return,
+  -cppcoreguidelines-init-variables,
+  -readability-implicit-bool-conversion,
+  -misc-no-recursion,
+  -bugprone-branch-clone,
+  -readability-function-cognitive-complexity,
+  -bugprone-narrowing-conversions,
+  -cppcoreguidelines-narrowing-conversions,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -hicpp-use-auto,
+  -readability-identifier-naming,
+  -clang-diagnostic-error,
+  -misc-const-correctness,
+  -altera-id-dependent-backward-branch,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -altera-unroll-loops, 
+  -cppcoreguidelines-avoid-magic-numbers,
+  -llvmlibc-*,
+  -llvm-header-guard,
+  -bugprone-easily-swappable-parameters,
+  -fuchsia-*,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -google-readability-braces-around-statements,
+  -google-build-using-namespace,
+  -readability-braces-around-statements,
+  -hicpp-no-array-decay,
+  -modernize-use-trailing-return-type,
+  -hicpp-braces-around-statements,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -google-global-names-in-headers,
+  -cppcoreguidelines-special-member-functions,
+  -hicpp-special-member-functions,
+  -cppcoreguidelines-owning-memory
+
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+
+CheckOptions:
+  - { key: readability-identifier-naming.ClassCase,           value: CamelCase  }
+  - { key: readability-identifier-naming.StructCase,          value: CamelCase  }
+  - { key: readability-identifier-naming.EnumCase,            value: CamelCase  }
+  - { key: readability-identifier-naming.VariableCase,        value: CamelCase  }
+  - { key: readability-identifier-naming.GlobalConstantCase,  value: UPPER_CASE }
+  - { key: readability-identifier-naming.FunctionCase,        value: camelBack  }
+  - { key: readability-identifier-naming.PublicMethodCase,    value: camelBack  }
+  - { key: readability-identifier-naming.PrivateMethodCase,   value: camelBack  }
+  - { key: readability-identifier-naming.PublicMemberCase,    value: CamelCase  }
